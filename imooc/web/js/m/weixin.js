@@ -66,11 +66,11 @@ var weixin_jssdk_ops = {
             }
         });
     },
-    //wxPay:function(json_data){
-    //    wx.ready(function(){
-    //        wx.chooseWXPay(json_data);
-    //    });
-    //},
+    wxPay:function(json_data){
+        wx.ready(function(){
+            wx.chooseWXPay(json_data);
+        });
+    },
     sharedSuccess:function(){
         $.ajax({
             url:common_ops.buildMUrl("/default/shared"),

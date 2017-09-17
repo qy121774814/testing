@@ -128,6 +128,7 @@ class PayApiService extends BaseService{
 	public function arrayToXml($arr){
 		$xml = "<xml>";
 		foreach ($arr as $key=>$val){
+			//如果是数字型，不是加上CDATA,防止XML解释成其他
 			if (is_numeric($val)){
 				$xml.="<".$key.">".$val."</".$key.">";
 
