@@ -129,4 +129,5 @@ class UserController extends BaseController
         $this->removeLoginStatus();
         return $this->redirect( UrlService::buildWebUrl('/user/login') );
     }
-} 
+
+}
