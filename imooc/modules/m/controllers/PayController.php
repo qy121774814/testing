@@ -2,6 +2,7 @@
 
 namespace app\modules\m\controllers;
 
+use app\common\services\PayOrderService;
 use app\common\services\UtilService;
 use app\common\services\weixin\PayApiService;
 use app\models\members\OauthMemberBind;
@@ -101,6 +102,7 @@ class PayController extends BaseController
             return $this->payEcho(false,$client_type );
         }
 
+        //重复发送订单的处理
         if ($pay_order_info['status'] == 1) {
             return $this->payEcho(true,$client_type );
         }
@@ -156,6 +158,23 @@ class PayController extends BaseController
             'openid' => $wx_ret['openid'],
             'callback_data' => $xml
         ];
+    }
+
+    protected function payEcho($flag = true,$client_type = "wechat" ){
+        $return_code =  $flag?"SUCCESS":"FAIL";
+        $return_msg =  $flag?"OK":"FAIL";
+        if( $client_type == "alipay" ){
+            $xml = $return_code;
+        }else{
+            $xml = <<<EOF
+<xml>
+   <return_code><![CDATA[{$return_code}]]></return_code>
+   <return_msg><![CDATA[{$return_msg}]]></return_msg>
+</xml>
+EOF;
+        }
+
+        return $xml;
     }
 
     private function getOpenId(){
