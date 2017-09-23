@@ -136,7 +136,7 @@ class ProductController extends BaseController
         $items = [];
         foreach( $product_items as $_item ){
             $tmp_item_info = explode("#",$_item);
-            $tmp_book_info = $book_mapping[ $tmp_item_info[0] ];
+            $tmp_book_info = $book_mapping[ $tmp_item_info[0] ];//为什么？
             $items[] = [
                 'price' => $tmp_book_info['price'] * $tmp_item_info[1],
                 'quantity' => $tmp_item_info[1],

@@ -2,6 +2,7 @@
 
 namespace app\modules\web\controllers;
 
+use app\models\book\Book;
 use app\modules\web\controllers\common\BaseController;
 use app\models\User;
 use app\common\services\UrlService;
@@ -129,5 +130,6 @@ class UserController extends BaseController
         $this->removeLoginStatus();
         return $this->redirect( UrlService::buildWebUrl('/user/login') );
     }
+
 
 }
