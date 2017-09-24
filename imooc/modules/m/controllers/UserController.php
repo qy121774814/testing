@@ -2,6 +2,7 @@
 
 namespace app\modules\m\controllers;
 
+use app\models\User;
 use yii\web\Controller;
 use app\common\services\ConstantMapService;
 use app\common\services\DataHelper;

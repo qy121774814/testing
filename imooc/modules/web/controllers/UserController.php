@@ -131,5 +131,4 @@ class UserController extends BaseController
         return $this->redirect( UrlService::buildWebUrl('/user/login') );
     }
 
-
 }

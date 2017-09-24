@@ -139,7 +139,7 @@ class PayOrderService extends  BaseService {
 		try {
 			$pay_order_info = PayOrder::findOne( $pay_order_id );
 			if( !$pay_order_info || !in_array( $pay_order_info['status'],[-8,-7] ) ){//只有-8，-7状态才可以操作
-				return true;
+				throw new Exception( "订单不存在或者状态不对" );
 			}
 
 			$pay_order_info->pay_sn = isset($params['pay_sn'])?$params['pay_sn']:"";
