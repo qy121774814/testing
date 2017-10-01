@@ -127,8 +127,53 @@ class UserController extends BaseController
     //我的订单
     public function actionOrder()
     {
+        $pay_order_list = PayOrder::find()->where([ 'member_id' => $this->current_user['id'] ])
+            ->orderBy([ 'id' => SORT_DESC ])->asArray()->all();
 
-        return $this->render('order');
+        $list = [];
+        if( $pay_order_list ) {
+            $pay_order_items_list = PayOrderItem::find()->where(['member_id' => $this->current_user['id'], 'pay_order_id' => array_column($pay_order_list, 'id')])->asArray()->all();
+
+            $book_mapping = Book::find()->where(['id' => array_column($pay_order_items_list, 'target_id')])->indexBy('id')->all();
+
+            $pay_order_items_mapping = [];
+            foreach ($pay_order_items_list as $_pay_order_item) {
+                $tmp_book_info = $book_mapping[ $_pay_order_item['target_id'] ];
+                if (!isset( $pay_order_items_mapping[ $_pay_order_item['pay_order_id'] ] ) ) {
+                    $pay_order_items_mapping[$_pay_order_item['pay_order_id']] = [];
+                }
+                $pay_order_items_mapping[$_pay_order_item['pay_order_id']][] = [
+                    'pay_price'       => $_pay_order_item['price'],
+                    'book_name'       => UtilService::encode($tmp_book_info['name']),
+                    'book_main_image' => UrlService::buildPicUrl("book", $tmp_book_info['main_image']),
+                    'book_id' => $_pay_order_item['target_id'],
+                    'comment_status' => $_pay_order_item['comment_status']
+                ];
+            }
+
+            foreach ($pay_order_list as $_pay_order_info) {
+                $list[] = [
+                    'id' => $_pay_order_info['id'],
+                    'sn' => date("Ymd", strtotime($_pay_order_info['created_time'])) . $_pay_order_info['id'],
+                    'created_time' => date("Y-m-d H:i", strtotime($_pay_order_info['created_time'])),
+                    'pay_order_id' => $_pay_order_info['id'],
+                    'pay_price'    => $_pay_order_info['pay_price'],
+                    'items' => $pay_order_items_mapping[$_pay_order_info['id']],
+                    'status' => $_pay_order_info[ 'status' ],
+                    'comment_status' => $_pay_order_info[ 'comment_status' ],
+                    'express_status' => $_pay_order_info[ 'express_status' ],
+                    'express_info' => $_pay_order_info[ 'express_info' ],
+                    'express_status_desc' => ConstantMapService::$express_status_mapping_for_member[ $_pay_order_info[ 'express_status' ] ],
+                    'status_desc' => ConstantMapService::$pay_status_mapping[ $_pay_order_info[ 'status' ] ],
+                    'pay_url' => UrlService::buildMUrl("/pay/buy/?pay_order_id={$_pay_order_info['id']}")
+                ];
+
+            }
+        }
+
+        return $this->render('order',[
+            'list' => $list
+        ]);
     }
     //我的
     public function actionIndex()
