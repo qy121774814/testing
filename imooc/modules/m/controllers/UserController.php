@@ -160,12 +160,12 @@ class UserController extends BaseController
                     'pay_price'    => $_pay_order_info['pay_price'],
                     'items' => $pay_order_items_mapping[$_pay_order_info['id']],
                     'status' => $_pay_order_info[ 'status' ],
-                    'comment_status' => $_pay_order_info[ 'comment_status' ],
+                    //'comment_status' => $_pay_order_info[ 'comment_status' ],
                     'express_status' => $_pay_order_info[ 'express_status' ],
                     'express_info' => $_pay_order_info[ 'express_info' ],
                     'express_status_desc' => ConstantMapService::$express_status_mapping_for_member[ $_pay_order_info[ 'express_status' ] ],
                     'status_desc' => ConstantMapService::$pay_status_mapping[ $_pay_order_info[ 'status' ] ],
-                    'pay_url' => UrlService::buildMUrl("/pay/buy/?pay_order_id={$_pay_order_info['id']}")
+                    'pay_url' => UrlService::buildMUrl("/pay/buy/?pay_order_id={$_pay_order_info['id']}")//以目录结构结尾
                 ];
 
             }
