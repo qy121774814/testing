@@ -9,6 +9,8 @@
 use \app\models\QueueList;
 use \app\commands\BaseController;
 use\app\common\services\weixin\TemplateService;
+use \app\models\members\Member;
+use app\common\services\UploadService;
 
 class ListController extends BaseController
 {
@@ -26,6 +28,12 @@ class ListController extends BaseController
             switch($_item['queue_name']){
                 case "pay":
                     $this->handlepay( $_item );
+                    break;
+                case "bind":
+                    $this->handleBind();
+                    break;
+                case "member_avatar":
+                    $this->handleMemberAvatar( $_item );
                     break;
             }
             $_item->status = -1;
@@ -46,4 +54,57 @@ class ListController extends BaseController
 
     }
 
+    /*
+     * 绑定微信相关通知
+     * */
+    private function handleBind($item)
+    {
+        $data = @json_encode( $item['data'] , true);
+
+        if( !isset( $data['member_id'] )|| !isset( $data['openid'] ) ){
+            return false;
+        }
+
+        if( !$data['member_id']  || !$data['openid']  ){
+            return false;
+        }
+
+        $member_info = Member::findOne( [ 'id' => $data['member_id'] ] );
+        if ( !$member_info ){
+            return false;
+        }
+
+        TemplateService::bindNotice( $data['member_id'] );
+        return true;
+
+    }
+
+    /*
+     * 更新头像
+     * */
+
+    private function handleMemberAvatar( $item ){
+        $data = @json_decode( $item['data'],true );
+
+        if( !isset( $data['member_id'] ) || !isset( $data['avatar_url']) ){
+            return false;
+        }
+
+
+        if( !$data['member_id'] || !$data['avatar_url'] ){
+            return false;
+        }
+
+        $member_info = Member::findOne([ 'id' => $data['member_id'] ]);
+        if( !$member_info ){
+            return false;
+        }
+
+        $ret = UploadService::uploadByUrl( $data['avatar_url'],"avatar" );
+        if( $ret ){
+            $member_info->avatar = $ret['path'];
+            $member_info->update( 0 );
+        }
+        return true;
+    }
 }

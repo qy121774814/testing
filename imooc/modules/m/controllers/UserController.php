@@ -100,17 +100,15 @@ class UserController extends BaseController
                 $model_bind->updated_time = $date_now;
                 $model_bind->created_time = $date_now;
                 $model_bind->save(0);
-//                //绑定之后要做的事情
-//                QueueListService::addQueue( "bind",[
-//                    'member_id' => $member_info['id'],
-//                    'type' => 1,
-//                    'openid' => $model_bind->openid
-//                ] );
-//            }
+                //绑定之后要做的事情
+                QueueListService::addQueue( "bind",[
+                    'member_id' => $member_info['id'],
+                    'type' => 1,
+                    'openid' => $model_bind->openid
+                ] );
             }
         }
 
-//
         if( UtilService::isWechat() && $member_info['nickname']  == $member_info['mobile'] ){
             return $this->renderJSON([ 'url' => UrlService::buildMUrl( "/oauth/login",[ 'scope' => 'snsapi_userinfo' ] )  ],"绑定成功~~11");
         }

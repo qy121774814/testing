@@ -9,6 +9,7 @@ namespace app\modules\m\controllers;
 use app\common\components\HttpClient;
 use app\common\services\ConstantMapService;
 
+use app\common\services\QueueListService;
 use app\common\services\UrlService;
 use app\models\members\Member;
 use app\models\members\OauthMemberBind;
@@ -65,6 +66,14 @@ class OauthController extends BaseController
                 $wechat_user_info = HttpClient::get($url);
                 $wechat_user_info = @json_decode($wechat_user_info, true);
                 //这个时候做登录特殊处理，例如更新用户名和头像等等新
+                if( $member_info->avatar == ConstantMapService::$default_avatar ){
+                    //需要做一个队列数据库了  $wechat_user_info['headimgurl]
+                    QueueListService::addQueue( "member_avatar",[
+                        'member_id' => $member_info['id'],
+                        'avatar_url' => $wechat_user_info['headimgurl'],
+                    ] );
+                }
+
                 if ($member_info['nickname'] == $member_info['mobile']) {
                     $member_info->nickname = isset($wechat_user_info['nickname']) ? $wechat_user_info['nickname'] : $member_info->nickname;
                     $member_info->update(0);
